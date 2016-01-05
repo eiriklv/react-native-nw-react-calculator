@@ -1,11 +1,13 @@
 'use strict';
 
-var mountFolder = function (connect, dir) {
-  return connect.static(require('path').resolve(dir));
+var serveStatic = require('serve-static');
+
+var mountFolder = function (dir) {
+  return serveStatic(require('path').resolve(dir));
 };
 
-var webpackDistConfig = require('./webpack.dist.config.js'),
-    webpackDevConfig = require('./webpack.config.js');
+var webpackDistConfig = require('./webpack.dist.config.js');
+var webpackDevConfig = require('./webpack.config.js');
 
 module.exports = function (grunt) {
   // Let *load-grunt-tasks* require everything
@@ -46,9 +48,9 @@ module.exports = function (grunt) {
       dist: {
         options: {
           keepalive: true,
-          middleware: function (connect) {
+          middleware: function () {
             return [
-              mountFolder(connect, pkgConfig.dist)
+              mountFolder(pkgConfig.dist)
             ];
           }
         }
@@ -63,7 +65,7 @@ module.exports = function (grunt) {
         path: 'http://localhost:<%= connect.options.port %>/webpack-dev-server/index.web.html'
       },
       dist: {
-        path: 'http://localhost:<%= connect.options.port %>/index.web.html'
+        path: 'http://localhost:<%= connect.options.port %>/index.html'
       }
     },
 
@@ -76,19 +78,15 @@ module.exports = function (grunt) {
     'copy': {
       dist: {
         files: [
-          // includes files within path
           {
             flatten: true,
-            expand: true,
-            src: ['<%= pkg.src %>/*'],
-            dest: '<%= pkg.dist %>/',
-            filter: 'isFile'
+            src: ['<%= pkg.src %>/index.web.html'],
+            dest: '<%= pkg.dist %>/index.html'
           },
           {
             flatten: true,
-            expand: true,
-            src: ['<%= pkg.src %>/images/*'],
-            dest: '<%= pkg.dist %>/images/'
+            src: ['<%= pkg.src %>/favicon.ico'],
+            dest: '<%= pkg.dist %>/favicon.ico'
           }
         ]
       }
@@ -140,7 +138,7 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('serve-nw', function (target) {
+  grunt.registerTask('serve-nw', function () {
     grunt.task.run([
       'concurrent'
     ]);

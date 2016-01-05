@@ -1,7 +1,6 @@
 'use strict';
 
-// it is important to import the react package before anything else
-import React from 'react';
+// it is important to import the react-native package before anyhting else
 import {
   AppRegistry
 } from 'react-native';
